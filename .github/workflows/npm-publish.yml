@@ -12,7 +12,37 @@ permissions:
   id-token: write
 
 jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Format check
+        run: bun run format
+
+      - name: Test
+        run: bun run test
+
+      - name: Build
+        run: bun run build
+
   publish:
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,21 +62,8 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Lint
-        run: bun run lint
-
-      - name: Typecheck
-        run: bun run typecheck
-
-      - name: Test (if exists)
-        shell: bash
-        run: |
-          set -euo pipefail
-          if compgen -G "tests/**/*.test.ts" > /dev/null; then
-            bun run test
-          else
-            echo "No tests found under tests/**/*.test.ts; skipping."
-          fi
+      - name: Build
+        run: bun run build
 
       - name: Verify tag matches package.json version (when tag push)
         if: startsWith(github.ref, 'refs/tags/v')

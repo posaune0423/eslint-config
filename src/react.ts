@@ -1,130 +1,72 @@
 import eslint from "@eslint/js";
-import prettier from "eslint-config-prettier";
 import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
-import globals from "globals";
+import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
+import unicornPlugin from "eslint-plugin-unicorn";
+
 import tseslint from "typescript-eslint";
+import type { Linter } from "eslint";
 import type { ConfigArray } from "typescript-eslint";
-import { ignorePatterns, strictTypeScriptRules, testFileRules } from "./base";
+import { baseRulesConfig } from "./base";
 
-/**
- * React ESLint configuration with type checking
- * Includes separate config for test files (without type checking)
- *
- * Note: Prettier is run separately from ESLint to avoid conflicts with @prettier/plugin-oxc.
- * Use `bun run format:fix` to format code with prettier.
- */
-const reactSourceFiles = [
-  "src/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
-  "docs/**/*.{ts,tsx,mdx}",
-];
+type FlatConfigPlugin = NonNullable<Linter.Config["plugins"]>[string];
 
-const reactTestFiles = [
-  "tests/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
-  "**/*.test.{ts,tsx}",
-  "**/*.spec.{ts,tsx}",
-];
+function asEslintPlugin(plugin: unknown): FlatConfigPlugin {
+  // Some plugins expose extra non-standard fields that don't fit ESLint's declared plugin types.
+  return plugin as FlatConfigPlugin;
+}
 
-const reactConfigFiles = ["*.config.ts", "*.config.js", "*.config.mjs"];
-
-const browserLanguageOptions = {
-  ecmaVersion: 2022,
-  sourceType: "module",
-  globals: {
-    ...globals.es2022,
-    ...globals.browser,
-  },
-} as const;
-
-const nodeLanguageOptions = {
-  ecmaVersion: 2022,
-  sourceType: "module",
-  globals: {
-    ...globals.es2022,
-    ...globals.node,
-  },
-} as const;
-
-const reactPlugins = {
-  react: reactPlugin,
-  "react-hooks": reactHooksPlugin,
+const reactPlugins: NonNullable<Linter.Config["plugins"]> = {
+  react: asEslintPlugin(reactPlugin),
+  "react-hooks": asEslintPlugin(reactHooksPlugin),
+  "react-you-might-not-need-an-effect": asEslintPlugin(reactYouMightNotNeedAnEffect),
+  unicorn: asEslintPlugin(unicornPlugin),
 };
 
-const reactSettings = {
+const reactSettings: Linter.Config["settings"] = {
   react: {
     version: "detect",
   },
-} as const;
+};
 
-const reactTypeCheckedConfigs = tseslint.configs.recommendedTypeChecked.map(
-  (conf) => ({
-    ...conf,
-    files: reactSourceFiles,
-  }),
-);
+const reactRecommendedConfig: Linter.Config = {
+  name: "@posaune0423/react/recommended",
+  files: ["**/*.{jsx,tsx}"],
 
-const reactSourceConfig = {
-  name: "@posaune0423/react/source",
-  files: reactSourceFiles,
-  languageOptions: {
-    ...browserLanguageOptions,
-    parserOptions: {
-      ecmaFeatures: {
-        jsx: true,
+  plugins: reactPlugins,
+  settings: reactSettings,
+  rules: {
+    ...reactPlugin.configs.recommended.rules,
+    ...reactHooksPlugin.configs.recommended.rules,
+    ...reactYouMightNotNeedAnEffect.configs.recommended.rules,
+    // react - omit `React.` / React import with the new JSX transform
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-uses-react": "off",
+    // react - enforce kebab-case filenames (Next.js-style)
+    "unicorn/filename-case": [
+      "error",
+      {
+        case: "kebabCase",
       },
-      projectService: true,
-    },
+    ],
+    // react - avoid React namespace types like `React.ChangeEvent`
+    // Prefer: `import type { ChangeEvent } from "react"` and `ChangeEvent`
+    "no-restricted-syntax": [
+      "error",
+      {
+        selector: "TSTypeReference > TSQualifiedName[left.name='React']",
+        message:
+          'Avoid React namespace types (e.g. `React.ChangeEvent`). Prefer `import type { ChangeEvent } from "react"` and use `ChangeEvent` directly.',
+      },
+    ],
   },
-  plugins: reactPlugins,
-  settings: reactSettings,
-  rules: {
-    ...strictTypeScriptRules,
-    ...reactPlugin.configs.recommended.rules,
-    ...reactHooksPlugin.configs.recommended.rules,
-    "react-hooks/exhaustive-deps": "off",
-    "react/react-in-jsx-scope": "off",
-    "react/prop-types": "off",
-  },
-} as const;
-
-const reactConfigFilesConfig = {
-  name: "@posaune0423/react/config-files",
-  files: reactConfigFiles,
-  languageOptions: nodeLanguageOptions,
-  rules: strictTypeScriptRules,
-} as const;
-
-const reactTestFilesConfig = {
-  name: "@posaune0423/react/tests",
-  files: reactTestFiles,
-  languageOptions: browserLanguageOptions,
-  plugins: reactPlugins,
-  settings: reactSettings,
-  rules: {
-    ...testFileRules,
-    ...reactPlugin.configs.recommended.rules,
-    ...reactHooksPlugin.configs.recommended.rules,
-    "react-hooks/exhaustive-deps": "off",
-    "react/react-in-jsx-scope": "off",
-    "react/prop-types": "off",
-  },
-} as const;
-
-const reactIgnoresConfig = {
-  name: "@posaune0423/react/ignores",
-  ignores: ignorePatterns,
-} as const;
+};
 
 export const reactConfig: ConfigArray = [
-  reactIgnoresConfig,
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
-  ...reactTypeCheckedConfigs,
-  reactSourceConfig,
-  reactConfigFilesConfig,
-  reactTestFilesConfig,
-  // Prettier config to disable conflicting rules (must be last to override other configs)
-  prettier,
+  ...tseslint.configs.recommendedTypeChecked,
+  baseRulesConfig,
+  reactRecommendedConfig,
 ];
 
 export default reactConfig;

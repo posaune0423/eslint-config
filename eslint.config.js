@@ -4,6 +4,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 const jsLikeFiles = ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"];
+const tsLikeFiles = ["**/*.{ts,mts,cts,tsx}"];
 
 /**
  * Repo-local ESLint config.
@@ -20,6 +21,7 @@ export default [
       "**/.turbo/**",
       "**/.output/**",
       "**/.wrangler/**",
+      "tests/fixtures/**",
       "**/*.lock",
       "**/.env*",
       "**/*.log",
@@ -38,29 +40,32 @@ export default [
       },
     },
   },
-  ...tseslint.configs.recommendedTypeChecked.map((conf) => ({
-    ...conf,
-    files: ["src/**/*.ts"],
-  })),
   {
-    name: "repo/src-overrides",
-    files: ["src/**/*.ts"],
+    name: "repo/typescript-typechecked",
+    files: tsLikeFiles,
     languageOptions: {
       parserOptions: {
         projectService: true,
       },
     },
+  },
+  ...tseslint.configs.recommendedTypeChecked.map((conf) => ({
+    ...conf,
+    files: tsLikeFiles,
+  })),
+  {
+    name: "repo/requested-rules",
+    files: tsLikeFiles,
     rules: {
       "@typescript-eslint/no-deprecated": "warn",
-      "@typescript-eslint/no-unused-vars": [
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/consistent-type-imports": [
         "error",
         {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
+          prefer: "type-imports",
+          fixStyle: "separate-type-imports",
         },
       ],
-      "prefer-const": "error",
-      "no-var": "error",
     },
   },
   // Prettier config to disable conflicting rules (must be last to override other configs)

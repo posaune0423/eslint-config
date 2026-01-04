@@ -28,11 +28,41 @@ export default reactConfig;
 
 ### Base (generic TypeScript)
 
-```bash
+```js
 import { baseConfig } from "@posaune0423/eslint-config";
 
 export default baseConfig;
 ```
+
+## Rules overview
+
+This config intentionally stays **simple**:
+
+- **Baseline**: mostly "recommended" presets from ESLint / TypeScript ESLint / React
+- **Customizations**: only the rules explicitly requested in this repo
+- **No splitting** by `testFiles` or by "typechecked vs non-typechecked"
+  - Note: `@typescript-eslint/no-deprecated` requires type information, so TypeScript linting is type-aware.
+
+### Presets (recommended configs)
+
+| Area    | Preset / Config                                                                          | What it does                                     | Link                                                                                                                                  |
+| ------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| general | `@eslint/js` recommended (`eslint.configs.recommended`)                                  | ESLint core recommended rules                    | [`@eslint/js`](https://github.com/eslint/eslint/tree/main/packages/js)                                                                |
+| ts      | `typescript-eslint` recommended type-checked (`tseslint.configs.recommendedTypeChecked`) | TypeScript rules that use type information       | [TypeScript ESLint: Typed Linting](https://typescript-eslint.io/getting-started/typed-linting)                                        |
+| react   | `eslint-plugin-react` recommended                                                        | React best-practice rules                        | [`eslint-plugin-react`](https://github.com/jsx-eslint/eslint-plugin-react)                                                            |
+| react   | `eslint-plugin-react-hooks` recommended                                                  | Enforces the Rules of Hooks                      | [`eslint-plugin-react-hooks`](https://www.npmjs.com/package/eslint-plugin-react-hooks)                                                |
+| react   | `eslint-plugin-react-you-might-not-need-an-effect` recommended                           | Warns on common unnecessary `useEffect` patterns | [`eslint-plugin-react-you-might-not-need-an-effect`](https://github.com/NickvanDyke/eslint-plugin-react-you-might-not-need-an-effect) |
+
+### Explicit customizations (only what was requested)
+
+| Area         | Rule / Setting                                                                                               | Level | What it does                                                         | Rule doc                                                                                               | Plugin doc                                                                       |
+| ------------ | ------------------------------------------------------------------------------------------------------------ | ----- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| general / ts | `@typescript-eslint/no-deprecated`                                                                           | warn  | Disallow using code marked as `@deprecated`                          | [Rule](https://typescript-eslint.io/rules/no-deprecated/)                                              | [TypeScript ESLint](https://typescript-eslint.io/)                               |
+| ts           | `@typescript-eslint/no-explicit-any`                                                                         | error | Disallow the `any` type                                              | [Rule](https://typescript-eslint.io/rules/no-explicit-any/)                                            | [TypeScript ESLint](https://typescript-eslint.io/)                               |
+| ts           | `@typescript-eslint/consistent-type-imports` (`prefer: "type-imports"`, `fixStyle: "separate-type-imports"`) | error | Enforce `import type { Foo } from "..."`                             | [Rule](https://typescript-eslint.io/rules/consistent-type-imports/)                                    | [TypeScript ESLint](https://typescript-eslint.io/)                               |
+| react        | `react/react-in-jsx-scope`                                                                                   | off   | React 17+ JSX transform: don’t require `import React`                | [Rule](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/react-in-jsx-scope.md) | [`eslint-plugin-react`](https://github.com/jsx-eslint/eslint-plugin-react)       |
+| react        | `react/jsx-uses-react`                                                                                       | off   | React 17+ JSX transform: don’t require React to be referenced in JSX | [Rule](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-uses-react.md)     | [`eslint-plugin-react`](https://github.com/jsx-eslint/eslint-plugin-react)       |
+| react        | `unicorn/filename-case` (`case: "kebabCase"`)                                                                | error | Enforce `kebab-case` filenames (e.g. Next.js style)                  | [Rule](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/filename-case.md)    | [`eslint-plugin-unicorn`](https://github.com/sindresorhus/eslint-plugin-unicorn) |
 
 This project was created using `bun init` in bun v1.3.5. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
 

@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Format check
+        run: bun run format
+
+      - name: Test
+        run: bun run test
+
+      - name: Build
+        run: bun run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -f "dist/index.js" ] && [ ! -f "dist/index.mjs" ]; then
+            echo "Build output not found"
+            exit 1
+          fi
+          if [ ! -f "dist/index.d.ts" ] && [ ! -f "dist/index.d.mts" ]; then
+            echo "Type definitions not found"
+            exit 1
+          fi
+          echo "Build output verified"
