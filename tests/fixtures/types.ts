@@ -1,3 +1,8 @@
-export const Foo = { value: "" } as const;
+// Shared types used by consistent-type-imports fixture.
 
-export type Foo = typeof Foo;
+export type UserId = string;
+
+export type User = {
+  id: UserId;
+  name: string;
+};

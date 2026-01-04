@@ -31,5 +31,6 @@ export function parseRuleIds(stdout: string): string[] {
   const results = JSON.parse(stdout) as Array<{ messages: Array<{ ruleId: string | null }> }>;
   const result = results[0];
   if (!result) return [];
+
   return result.messages.map((m) => m.ruleId).filter((x): x is string => typeof x === "string");
 }
