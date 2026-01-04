@@ -1,0 +1,9 @@
+---
+globs: *.ts
+alwaysApply: false
+---
+## Telegram
+
+### Markdown V2
+
+- Always escape with `\\` for _ * [ ] ( ) ~ ` > # + - = | { } . !

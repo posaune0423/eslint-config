@@ -1,0 +1,118 @@
+---
+description: Chrome Extension folder structure and conventions
+globs: apps/chrome-ext/**/*
+alwaysApply: false
+---
+
+# Chrome Extension Folder Structure
+
+このプロジェクトは [WXT](https://wxt.dev/) を使用したChrome Extension です。
+
+## Required Folder Structure
+
+```
+apps/chrome-ext/
+├── components/          # UIコンポーネント
+│   ├── agents/          # エージェント関連コンポーネント
+│   ├── chat/            # チャット関連コンポーネント
+│   ├── layout/          # レイアウトコンポーネント (Header, Footer, Sidebar等)
+│   └── pages/           # ページレベルコンポーネント
+├── constants/           # 定数定義
+├── entrypoints/         # WXTエントリーポイント (変更禁止)
+│   ├── background.ts    # Service Worker
+│   ├── content.ts       # Content Script
+│   ├── popup/           # Popup UI
+│   └── sidepanel/       # Side Panel UI
+├── hooks/               # React Custom Hooks
+├── lib/                 # API clients, external integrations
+├── public/              # 静的ファイル (icons等)
+├── types/               # TypeScript型定義
+└── utils/               # ユーティリティ関数
+```
+
+## Folder Responsibilities
+
+### `components/`
+- Reactコンポーネントのみを配置
+- サブフォルダは機能/ドメインで分割
+- 各サブフォルダに `index.ts` でバレルエクスポートを推奨
+
+```typescript
+// components/chat/index.ts
+export * from './ChatInput';
+export * from './ChatMessageList';
+```
+
+### `hooks/`
+- Custom Hooksのみを配置
+- ファイル名は `use-*.ts` 形式
+- データフェッチング hooks は `use-{resource}.ts` 形式
+
+```
+hooks/
+├── index.ts             # バレルエクスポート
+├── auth.ts              # 認証関連 hooks
+├── use-agents.ts        # エージェントデータ取得
+├── use-create-agent.ts  # エージェント作成mutation
+└── use-me.ts            # ユーザー情報取得
+```
+
+### `lib/`
+- 外部API clients
+- サードパーティライブラリのラッパー
+- ストリーミングクライアントなど複雑なロジック
+
+```
+lib/
+├── api.ts               # 汎用APIクライアント
+├── dsl-stream-client.ts # DSLストリーミング専用クライアント
+├── query-client.ts      # React Query設定
+└── rpc-client.ts        # Hono RPC client
+```
+
+### `types/`
+- 共通型定義
+- API response types
+- UI state types
+
+### `utils/`
+- 純粋関数のユーティリティ
+- フォーマッター
+- ロガー
+
+## File Naming Conventions
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| React Component | PascalCase.tsx | `AgentList.tsx` |
+| Hook | use-kebab-case.ts | `use-agents.ts` |
+| Utility | kebab-case.ts | `format.ts` |
+| Type definition | kebab-case.ts | `index.ts` |
+| Constant | kebab-case.ts | `mock.ts` |
+
+## Anti-patterns (避けるべきこと)
+
+❌ `entrypoints/` 配下の構造を変更しない (WXTの規約)
+❌ `components/` 直下にコンポーネントを配置しない (必ずサブフォルダを使う)
+❌ `hooks/` にhook以外のコードを配置しない
+❌ `lib/` に純粋なユーティリティ関数を配置しない (`utils/` を使う)
+❌ `utils/` に副作用を持つ関数を配置しない (`lib/` を使う)
+
+## Import Order
+
+```typescript
+// 1. React/外部ライブラリ
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+
+// 2. 内部lib/hooks
+import { rpcClient } from '@/lib/rpc-client';
+import { useAgents } from '@/hooks';
+
+// 3. 内部components
+import { AgentList } from '@/components/agents';
+
+// 4. types/constants/utils
+import type { Agent } from '@/types';
+import { formatDate } from '@/utils';
+```

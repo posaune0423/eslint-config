@@ -1,0 +1,199 @@
+---
+description: Server (Cloudflare Worker) folder structure and conventions
+globs: apps/server/**/*
+alwaysApply: false
+---
+
+# Server Folder Structure
+
+このプロジェクトは Cloudflare Worker + Hono を使用したバックエンドサーバーです。
+
+## Required Folder Structure
+
+```
+apps/server/
+├── src/
+│   ├── api.ts           # Hono app定義、ルートのマウント
+│   ├── cron.ts          # Scheduled handlers
+│   ├── worker.ts        # Worker エントリーポイント
+│   │
+│   ├── bot/             # Telegram Bot handlers
+│   │   ├── index.ts     # Bot初期化・エクスポート
+│   │   ├── commands.ts  # コマンドハンドラー
+│   │   └── handler.ts   # メッセージハンドラー
+│   │
+│   ├── constants/       # 定数定義
+│   │   └── index.ts
+│   │
+│   ├── domain/          # ドメインロジック・エラー定義
+│   │   ├── index.ts
+│   │   └── errors.ts
+│   │
+│   ├── lib/             # ビジネスロジック・サービス層
+│   │   ├── *-service.ts # サービスクラス/関数
+│   │   └── *-api.ts     # 外部API clients
+│   │
+│   ├── repositories/    # データアクセス層
+│   │   └── types.ts
+│   │
+│   ├── routes/          # APIルートハンドラー
+│   │   ├── llm.ts       # LLM関連エンドポイント
+│   │   └── webhook.ts   # Webhook エンドポイント
+│   │
+│   ├── rpc/             # Hono RPC定義
+│   │   ├── index.ts     # RPC app エクスポート
+│   │   ├── app-rpc.ts   # RPC定義
+│   │   └── types.ts     # RPC型定義
+│   │
+│   ├── types/           # 型定義
+│   │   ├── env.ts       # Environment bindings
+│   │   └── cloudflare.ts
+│   │
+│   └── utils/           # ユーティリティ
+│       ├── index.ts
+│       └── logger.ts
+│
+└── tests/
+    └── unit/            # ユニットテスト
+```
+
+## Folder Responsibilities
+
+### `src/api.ts`
+- Hono appのインスタンス作成
+- 全ルートのマウント
+- グローバルミドルウェアの設定
+
+```typescript
+const app = new Hono<AppEnv>();
+app.route('/api/llm', llmRoutes);
+app.route('/api/webhook', webhookRoutes);
+```
+
+### `src/worker.ts`
+- Cloudflare Worker エントリーポイント
+- fetch/scheduled ハンドラーのエクスポート
+
+### `src/routes/`
+- Hono ルートハンドラー
+- HTTPエンドポイントの定義
+- リクエスト/レスポンスの処理
+
+```typescript
+// routes/llm.ts
+export const llmRoutes = new Hono<AppEnv>()
+  .post('/generate', async (c) => { ... });
+```
+
+### `src/rpc/`
+- Hono RPC定義
+- フロントエンドとの型安全なAPI通信
+- `app-rpc.ts` でRPC appを定義
+
+### `src/lib/`
+- ビジネスロジックのサービス層
+- 外部APIクライアント
+- 複雑な処理のカプセル化
+
+```
+lib/
+├── dsl-generation-service.ts  # DSL生成サービス
+├── dsl-schema.ts              # DSLスキーマ定義
+└── telegram-api.ts            # Telegram API client
+```
+
+### `src/domain/`
+- ドメインエラー定義
+- ビジネスルール
+- バリデーションロジック
+
+### `src/repositories/`
+- データベースアクセス
+- D1/KV/R2 との通信
+- データ取得・永続化
+
+### `src/bot/`
+- Telegram Bot専用ハンドラー
+- コマンド定義
+- メッセージ処理
+
+### `src/constants/`
+- 設定値
+- マジックナンバー
+- 列挙型
+
+### `src/types/`
+- TypeScript型定義
+- Environment bindings
+- Cloudflare固有の型
+
+### `src/utils/`
+- 純粋関数ユーティリティ
+- ロガー
+- ヘルパー関数
+
+## File Naming Conventions
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Route handler | kebab-case.ts | `llm.ts`, `webhook.ts` |
+| Service | *-service.ts | `dsl-generation-service.ts` |
+| API client | *-api.ts | `telegram-api.ts` |
+| Type definition | kebab-case.ts | `env.ts` |
+
+## Layer Architecture
+
+```
+Request
+   ↓
+routes/ (HTTP handling)
+   ↓
+rpc/ (Type-safe RPC)
+   ↓
+lib/ (Business logic)
+   ↓
+repositories/ (Data access)
+   ↓
+domain/ (Domain rules)
+```
+
+## Anti-patterns (避けるべきこと)
+
+❌ `routes/` にビジネスロジックを直接書かない (`lib/` でサービス化)
+❌ `lib/` に直接DB操作を書かない (`repositories/` を使う)
+❌ `domain/` にインフラ依存のコードを書かない
+❌ `worker.ts` にルート定義を書かない (`api.ts` を使う)
+❌ 環境変数を直接参照しない (`c.env` を使う)
+
+## Error Handling
+
+```typescript
+// domain/errors.ts でエラー型を定義
+export type AppError =
+  | { type: 'ValidationError'; message: string }
+  | { type: 'NotFoundError'; resource: string }
+  | { type: 'ExternalApiError'; service: string; cause: unknown };
+
+// lib/ でResult型を返す
+export async function generateDsl(input: Input): Promise<Result<Dsl, AppError>> {
+  // ...
+}
+```
+
+## Import Order
+
+```typescript
+// 1. Hono/外部ライブラリ
+import { Hono } from 'hono';
+import { z } from 'zod';
+
+// 2. 内部lib/services
+import { generateDsl } from '@/lib/dsl-generation-service';
+
+// 3. domain
+import type { AppError } from '@/domain';
+
+// 4. types/constants/utils
+import type { AppEnv } from '@/types/env';
+import { logger } from '@/utils/logger';
+```

@@ -1,0 +1,56 @@
+{
+  "name": "@posaune0423/eslint-config",
+  "module": "src/index.ts",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "ESLint config for @posaune0423",
+  "author": "posaune0423",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/posaune0423/eslint-config.git"
+  },
+  "keywords": [
+    "eslint",
+    "config",
+    "posaune0423"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --check . --experimental-cli --experimental-ternaries",
+    "format:fix": "prettier --write . --experimental-cli --experimental-ternaries",
+    "typecheck": "tsc --noEmit",
+    "test": "bun run tests/**/*.test.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "devDependencies": {
+    "@eslint/compat": "^2.0.0",
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
+    "@prettier/plugin-oxc": "^0.1.3",
+    "@types/bun": "latest",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^16.5.0",
+    "prettier": "^3.7.4",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "typescript-eslint": "^8.50.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "prettier": {
+    "plugins": [
+      "@prettier/plugin-oxc",
+      "prettier-plugin-organize-imports",
+      "prettier-plugin-tailwindcss"
+    ]
+  }
+}
