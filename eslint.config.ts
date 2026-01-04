@@ -24,4 +24,15 @@ export default [
     ],
   },
   ...baseConfig,
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ["*.ts*"],
+          defaultProject: "tsconfig.json",
+        },
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
 ] as Linter.Config[];
