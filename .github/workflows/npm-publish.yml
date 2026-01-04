@@ -38,6 +38,11 @@ jobs:
     permissions:
       contents: read
       id-token: write # Required for OIDC trusted publishing
+    # Enforce OIDC-only publishing. If any repository/environment secret still injects tokens,
+    # this clears them to avoid falling back to token-based auth.
+    env:
+      NODE_AUTH_TOKEN: ""
+      NPM_TOKEN: ""
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -89,6 +94,4 @@ jobs:
       - name: Publish to npm
         # With trusted publishing (OIDC), no npm token should be required.
         # If OIDC is not active/mismatched, publishing will fail without a token.
-        env:
-          NODE_AUTH_TOKEN: ""
         run: npm publish --access public --provenance
