@@ -17,24 +17,16 @@ function asEslintPlugin(plugin: unknown): FlatConfigPlugin {
 }
 
 const reactPlugins: NonNullable<Linter.Config["plugins"]> = {
-  react: asEslintPlugin(reactPlugin),
+  react: reactPlugin,
   "react-hooks": asEslintPlugin(reactHooksPlugin),
-  "react-you-might-not-need-an-effect": asEslintPlugin(reactYouMightNotNeedAnEffect),
-  unicorn: asEslintPlugin(unicornPlugin),
-};
-
-const reactSettings: Linter.Config["settings"] = {
-  react: {
-    version: "detect",
-  },
+  "react-you-might-not-need-an-effect": reactYouMightNotNeedAnEffect,
+  unicorn: unicornPlugin,
 };
 
 const reactRecommendedConfig: Linter.Config = {
   name: "@posaune0423/react/recommended",
   files: ["**/*.{jsx,tsx}"],
-
   plugins: reactPlugins,
-  settings: reactSettings,
   rules: {
     ...reactPlugin.configs.recommended.rules,
     ...reactHooksPlugin.configs.recommended.rules,
@@ -49,14 +41,14 @@ const reactRecommendedConfig: Linter.Config = {
         case: "kebabCase",
       },
     ],
-    // react - avoid React namespace types like `React.ChangeEvent`
-    // Prefer: `import type { ChangeEvent } from "react"` and `ChangeEvent`
+    // react - avoid React namespace types like `React.Foo`
+    // Prefer: `import type { Foo } from "react"` and `Foo`
     "no-restricted-syntax": [
       "error",
       {
-        selector: "TSTypeReference > TSQualifiedName[left.name='React']",
+        selector: "TSQualifiedName[left.name='React']",
         message:
-          'Avoid React namespace types (e.g. `React.ChangeEvent`). Prefer `import type { ChangeEvent } from "react"` and use `ChangeEvent` directly.',
+          'Avoid React namespace types (e.g. `React.Foo`). Prefer `import type { Foo } from "react"` and use `Foo` directly.',
       },
     ],
   },

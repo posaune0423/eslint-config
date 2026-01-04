@@ -1,8 +1,8 @@
 import path from "node:path";
 import unicornPlugin from "eslint-plugin-unicorn";
-import { reactConfig } from "../../src/react";
-import { createTsRuleTester, repoRoot } from "../helpers/rule-tester";
-import { asRuleModule, getRuleOptions, getRuleSetting } from "../helpers/test-utils";
+import { reactConfig } from "../../../src/react";
+import { createTsRuleTester, repoRoot } from "../../helpers/rule-tester";
+import { asRuleModule, getRuleOptions, getRuleSetting } from "../../helpers/test-utils";
 
 // Access the rule from the plugin (with null check)
 const rules = unicornPlugin.rules;

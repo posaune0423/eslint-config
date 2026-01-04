@@ -1,7 +1,7 @@
 import type { TSESLint, TSESTree } from "@typescript-eslint/utils";
-import { reactConfig } from "../../src/react";
-import { createTsRuleTester } from "../helpers/rule-tester";
-import { getRuleSetting } from "../helpers/test-utils";
+import { reactConfig } from "../../../src/react";
+import { createTsRuleTester } from "../../helpers/rule-tester";
+import { getRuleSetting } from "../../helpers/test-utils";
 
 type MessageIds = "misconfigured";
 type Options = [];
@@ -27,8 +27,7 @@ const assertReactJsxTransformOffRule: TSESLint.RuleModule<MessageIds, Options> =
     type: "problem",
     schema: [],
     messages: {
-      misconfigured:
-        "react/react-in-jsx-scope and react/jsx-uses-react must be disabled for the new JSX transform.",
+      misconfigured: "react/react-in-jsx-scope and react/jsx-uses-react must be disabled for the new JSX transform.",
     },
   },
   create(context) {

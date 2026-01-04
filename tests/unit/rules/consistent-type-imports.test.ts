@@ -1,7 +1,7 @@
 import tseslint from "typescript-eslint";
-import { requestedTypeScriptRules } from "../../src/base";
-import { createTsRuleTester } from "../helpers/rule-tester";
-import { asRuleModule, getRuleOptions } from "../helpers/test-utils";
+import { requestedTypeScriptRules } from "../../../src/base";
+import { createTsRuleTester } from "../../helpers/rule-tester";
+import { asRuleModule, getRuleOptions } from "../../helpers/test-utils";
 
 // Access the rule from the plugin
 const tsPlugin = tseslint.plugin as unknown as { rules: Record<string, unknown> };

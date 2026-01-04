@@ -35,6 +35,8 @@
     "format:fix": "prettier --write . --experimental-cli --experimental-ternaries",
     "typecheck": "tsgo --noEmit",
     "test": "bun test",
+    "test:unit": "bun test tests/unit",
+    "test:integration": "bun test tests/integration",
     "build": "tsdown",
     "prepublishOnly": "bun run build"
   },

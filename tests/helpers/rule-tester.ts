@@ -23,15 +23,15 @@ export function createTsRuleTester({
         ecmaVersion: 2022,
         sourceType: "module",
         ecmaFeatures: jsx ? { jsx: true } : {},
-        ...(typeChecked
-          ? {
-              projectService: {
-                // Enable type-aware linting for all test files.
-                allowDefaultProject: ["*.ts*"],
-              },
-              tsconfigRootDir: repoRoot,
-            }
-          : {}),
+        ...(typeChecked ?
+          {
+            projectService: {
+              // Enable type-aware linting for all test files.
+              allowDefaultProject: ["*.ts*"],
+            },
+            tsconfigRootDir: repoRoot,
+          }
+        : {}),
       },
     },
   });
