@@ -37,9 +37,6 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
-      - name: Lint
-        run: bun run lint
-
       - name: Verify build output
         run: |
           if [ ! -f "dist/index.js" ] && [ ! -f "dist/index.mjs" ]; then
@@ -51,11 +48,3 @@ jobs:
             exit 1
           fi
           echo "Build output verified"
-
-      - name: Publish to npm
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-          bun publish
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

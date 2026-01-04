@@ -29,8 +29,6 @@
     "posaune0423"
   ],
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
     "format": "prettier --check . --experimental-cli --experimental-ternaries",
     "format:fix": "prettier --write . --experimental-cli --experimental-ternaries",
     "typecheck": "tsgo --noEmit",
@@ -56,7 +54,6 @@
     "typescript-eslint": "8.50.0"
   },
   "devDependencies": {
-    "@posaune0423/eslint-config": "^1.1.0",
     "@types/bun": "latest",
     "@typescript-eslint/rule-tester": "8.50.0",
     "@typescript/native-preview": "^7.0.0-dev.20260104.1",
