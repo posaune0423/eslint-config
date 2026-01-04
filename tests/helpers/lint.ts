@@ -1,7 +1,6 @@
 import path from "node:path";
 
 export const repoRoot = path.resolve(import.meta.dir, "..", "..");
-const eslintBin = path.join(repoRoot, "node_modules", "eslint", "bin", "eslint.js");
 
 export function configPath(name: "base" | "node" | "react"): string {
   return path.join(repoRoot, "tests", "helpers", `eslint.config.${name}.ts`);
@@ -13,7 +12,7 @@ export function fixturePath(fileName: string): string {
 
 export async function lintFile({ configFile, filePath }: { configFile: string; filePath: string }) {
   const proc = Bun.spawn({
-    cmd: ["bun", eslintBin, "--no-ignore", "--format", "json", "--config", configFile, filePath],
+    cmd: ["bun", "run", "eslint", "--no-ignore", "--format", "json", "--config", configFile, filePath],
     cwd: repoRoot,
     stdout: "pipe",
     stderr: "pipe",
