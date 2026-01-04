@@ -16,6 +16,8 @@ export const requestedTypeScriptRules: Linter.RulesRecord = {
   "@typescript-eslint/no-deprecated": "warn",
   // ts - sloppy types
   "@typescript-eslint/no-explicit-any": "error",
+  // ts - disallow unnecessary conditions (this includes unnecessary optional chaining when detectable)
+  "@typescript-eslint/no-unnecessary-condition": "error",
   // ts - always use `import type`
   "@typescript-eslint/consistent-type-imports": [
     "error",
@@ -29,17 +31,6 @@ export const requestedTypeScriptRules: Linter.RulesRecord = {
 
 export const baseRulesConfig: Linter.Config = {
   name: "@posaune0423/base/rules",
-  files: ["**/*.{ts,mts,cts,tsx}"],
-  languageOptions: {
-    parserOptions: {
-      projectService: {
-        // Use the project's root tsconfig by default.
-        defaultProject: "tsconfig.json",
-      },
-      // Use the caller's working directory as the tsconfig root.
-      tsconfigRootDir: process.cwd(),
-    },
-  },
   rules: {
     ...requestedTypeScriptRules,
   },

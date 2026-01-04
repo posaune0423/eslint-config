@@ -1,13 +1,39 @@
-import { expect, test } from "bun:test";
-import { configPath, fixturePath, lintFile, parseRuleIds } from "../helpers/lint";
+import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
+import { createTsRuleTester } from "../helpers/rule-tester";
+import { asRuleModule } from "../helpers/test-utils";
 
-test("react-you-might-not-need-an-effect/no-empty-effect is active", async () => {
-  const { exitCode, stdout, stderr } = await lintFile({
-    configFile: configPath("react"),
-    filePath: fixturePath("react-you-might-not-need-an-effect__empty-effect.tsx"),
-  });
+// Access the rule from the plugin (with null check)
+const rules = reactYouMightNotNeedAnEffect.rules;
+if (!rules) throw new Error("react-you-might-not-need-an-effect plugin has no rules");
+const rule = asRuleModule(rules["no-empty-effect"]);
 
-  if (exitCode === 2) throw new Error(stderr);
-  expect(exitCode === 0 || exitCode === 1).toBe(true);
-  expect(parseRuleIds(stdout)).toContain("react-you-might-not-need-an-effect/no-empty-effect");
+const ruleTester = createTsRuleTester({ jsx: true });
+
+ruleTester.run("no-empty-effect", rule, {
+  valid: [
+    {
+      code: `
+import { useEffect } from "react";
+export function Ok() {
+  useEffect(() => {
+    const id = setTimeout(() => {}, 0);
+    return () => clearTimeout(id);
+  }, []);
+  return null;
+}
+      `.trim(),
+    },
+  ],
+  invalid: [
+    {
+      code: `
+import { useEffect } from "react";
+export function Bad() {
+  useEffect(() => {}, []);
+  return null;
+}
+      `.trim(),
+      errors: [{ messageId: "avoidEmptyEffect" }],
+    },
+  ],
 });

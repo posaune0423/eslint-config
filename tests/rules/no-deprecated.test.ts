@@ -1,13 +1,34 @@
-import { expect, test } from "bun:test";
-import { configPath, fixturePath, lintFile, parseRuleIds } from "../helpers/lint";
+import tseslint from "typescript-eslint";
+import { createTsRuleTester } from "../helpers/rule-tester";
+import { asRuleModule } from "../helpers/test-utils";
 
-test("@typescript-eslint/no-deprecated is enabled (warn)", async () => {
-  const { exitCode, stdout, stderr } = await lintFile({
-    configFile: configPath("base"),
-    filePath: fixturePath("ts-no-deprecated__deprecated-usage.ts"),
-  });
+// Access the rule from the plugin
+const tsPlugin = tseslint.plugin as unknown as { rules: Record<string, unknown> };
+const rule = asRuleModule(tsPlugin.rules["no-deprecated"]);
 
-  if (exitCode === 2) throw new Error(stderr);
-  expect(exitCode === 0 || exitCode === 1).toBe(true);
-  expect(parseRuleIds(stdout)).toContain("@typescript-eslint/no-deprecated");
+const ruleTester = createTsRuleTester({ typeChecked: true });
+
+ruleTester.run("no-deprecated", rule, {
+  valid: [
+    {
+      code: `
+function greet(name: string) {
+  return "Hello, " + name;
+}
+greet("World");
+      `.trim(),
+    },
+  ],
+  invalid: [
+    {
+      code: `
+/** @deprecated Use newGreet instead */
+function greet(name: string) {
+  return "Hello, " + name;
+}
+greet("World");
+      `.trim(),
+      errors: [{ messageId: "deprecatedWithReason" }],
+    },
+  ],
 });

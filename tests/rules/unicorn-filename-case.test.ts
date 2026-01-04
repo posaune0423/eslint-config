@@ -1,13 +1,32 @@
-import { expect, test } from "bun:test";
-import { configPath, fixturePath, lintFile, parseRuleIds } from "../helpers/lint";
+import path from "node:path";
+import unicornPlugin from "eslint-plugin-unicorn";
+import { reactConfig } from "../../src/react";
+import { createTsRuleTester, repoRoot } from "../helpers/rule-tester";
+import { asRuleModule, getRuleOptions, getRuleSetting } from "../helpers/test-utils";
 
-test("unicorn/filename-case enforces kebab-case filenames", async () => {
-  const { exitCode, stdout, stderr } = await lintFile({
-    configFile: configPath("react"),
-    filePath: fixturePath("react-unicorn-filename-case__FooBar.tsx"),
-  });
+// Access the rule from the plugin (with null check)
+const rules = unicornPlugin.rules;
+if (!rules) throw new Error("unicorn plugin has no rules");
+const rule = asRuleModule(rules["filename-case"]);
 
-  if (exitCode === 2) throw new Error(stderr);
-  expect(exitCode === 0 || exitCode === 1).toBe(true);
-  expect(parseRuleIds(stdout)).toContain("unicorn/filename-case");
+const options = getRuleOptions(getRuleSetting(reactConfig, "unicorn/filename-case"));
+
+const ruleTester = createTsRuleTester({ jsx: true });
+
+ruleTester.run("filename-case", rule, {
+  valid: [
+    {
+      code: "export const x = 1; void x;",
+      filename: path.join(repoRoot, "apps/foo-bar.tsx"),
+      options,
+    },
+  ],
+  invalid: [
+    {
+      code: "export const x = 1; void x;",
+      filename: path.join(repoRoot, "apps/FooBar.tsx"),
+      options,
+      errors: [{ messageId: "filename-case" }],
+    },
+  ],
 });

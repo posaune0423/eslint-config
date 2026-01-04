@@ -1,13 +1,37 @@
-import { expect, test } from "bun:test";
-import { configPath, fixturePath, lintFile, parseRuleIds } from "../helpers/lint";
+import tseslint from "typescript-eslint";
+import { createTsRuleTester } from "../helpers/rule-tester";
+import { asRuleModule } from "../helpers/test-utils";
 
-test("@typescript-eslint/no-explicit-any is enabled (error)", async () => {
-  const { exitCode, stdout, stderr } = await lintFile({
-    configFile: configPath("base"),
-    filePath: fixturePath("ts-no-explicit-any__explicit-any.ts"),
-  });
+// Access the rule from the plugin
+const tsPlugin = tseslint.plugin as unknown as { rules: Record<string, unknown> };
+const rule = asRuleModule(tsPlugin.rules["no-explicit-any"]);
 
-  if (exitCode === 2) throw new Error(stderr);
-  expect(exitCode === 0 || exitCode === 1).toBe(true);
-  expect(parseRuleIds(stdout)).toContain("@typescript-eslint/no-explicit-any");
+const ruleTester = createTsRuleTester();
+
+ruleTester.run("no-explicit-any", rule, {
+  valid: [
+    {
+      code: "const x: unknown = 1; void x;",
+    },
+  ],
+  invalid: [
+    {
+      code: "const x: any = 1; void x;",
+      errors: [
+        {
+          messageId: "unexpectedAny",
+          suggestions: [
+            {
+              messageId: "suggestUnknown",
+              output: "const x: unknown = 1; void x;",
+            },
+            {
+              messageId: "suggestNever",
+              output: "const x: never = 1; void x;",
+            },
+          ],
+        },
+      ],
+    },
+  ],
 });
