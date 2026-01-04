@@ -58,26 +58,15 @@ jobs:
           # npm Trusted Publishing docs use Node 24+ examples; newer npm improves OIDC support.
           # See: https://docs.npmjs.com/trusted-publishers
           node-version: 24
-          registry-url: "https://registry.npmjs.org"
-          scope: "@posaune0423"
+          # Note: We intentionally do NOT set registry-url/scope here.
+          # Those options generate a temporary .npmrc (often with always-auth) and can pull in tokens.
+          # Trusted publishing (OIDC) does not require NODE_AUTH_TOKEN.
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
       - name: Build
         run: bun run build
-
-      - name: Diagnostics (safe)
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "node: $(node -v)"
-          echo "npm:  $(npm -v)"
-          if [[ -n "${NODE_AUTH_TOKEN:-}" ]]; then
-            echo "NODE_AUTH_TOKEN is set (unexpected for trusted publishing)."
-          else
-            echo "NODE_AUTH_TOKEN is not set."
-          fi
 
       - name: Verify tag matches package.json version (when tag push)
         if: startsWith(github.ref, 'refs/tags/v')
