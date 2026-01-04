@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write  # Required for OIDC trusted publishing
+      id-token: write # Required for OIDC trusted publishing
     steps:
       - name: Checkout
         uses: actions/checkout@v4
