@@ -50,7 +50,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # npm Trusted Publishing docs use Node 24+ examples; newer npm improves OIDC support.
+          # See: https://docs.npmjs.com/trusted-publishers
+          node-version: 24
           registry-url: "https://registry.npmjs.org"
           scope: "@posaune0423"
 
@@ -59,6 +61,18 @@ jobs:
 
       - name: Build
         run: bun run build
+
+      - name: Diagnostics (safe)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "node: $(node -v)"
+          echo "npm:  $(npm -v)"
+          if [[ -n "${NODE_AUTH_TOKEN:-}" ]]; then
+            echo "NODE_AUTH_TOKEN is set (unexpected for trusted publishing)."
+          else
+            echo "NODE_AUTH_TOKEN is not set."
+          fi
 
       - name: Verify tag matches package.json version (when tag push)
         if: startsWith(github.ref, 'refs/tags/v')
@@ -73,4 +87,8 @@ jobs:
           fi
 
       - name: Publish to npm
+        # With trusted publishing (OIDC), no npm token should be required.
+        # If OIDC is not active/mismatched, publishing will fail without a token.
+        env:
+          NODE_AUTH_TOKEN: ""
         run: npm publish --access public --provenance

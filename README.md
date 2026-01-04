@@ -94,11 +94,22 @@ This repository publishes to npm via GitHub Actions when you:
 - push a tag like `v1.2.3`, or
 - publish a GitHub Release
 
-### Required GitHub Secret
+### Trusted Publishing Setup
 
-Add a repository secret:
+This repository uses **trusted publishing** with OIDC for secure npm publishing. No tokens are required.
 
-- **`NPM_TOKEN`**: an npm access token with permission to publish `@posaune0423/eslint-config`
+#### Initial Setup
+
+1. Go to https://www.npmjs.com/package/@posaune0423/eslint-config
+2. Navigate to **Settings** → **Publishing access** → **Trusted publishers**
+3. Click **Add trusted publisher**
+4. Select **GitHub Actions** and configure:
+   - **Owner**: `posaune0423`
+   - **Repository**: `eslint-config`
+   - **Workflow filename**: `npm-publish.yml` (must include `.yml` extension)
+5. Click **Save**
+
+The workflow file is already configured with the required `id-token: write` permission for OIDC authentication.
 
 ### Recommended flow
 
