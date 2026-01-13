@@ -1,12 +1,15 @@
 import tseslint from "typescript-eslint";
-import { requestedTypeScriptRules } from "../../../src/base";
+import posaune from "../../../src";
 import { createTsRuleTester } from "../../helpers/rule-tester";
-import { asRuleModule, getRuleOptions } from "../../helpers/test-utils";
+import { asRuleModule, getRuleOptions, getRuleSetting } from "../../helpers/test-utils";
 
 // Access the rule from the plugin
 const tsPlugin = tseslint.plugin as unknown as { rules: Record<string, unknown> };
 const rule = asRuleModule(tsPlugin.rules["consistent-type-imports"]);
-const options = getRuleOptions(requestedTypeScriptRules["@typescript-eslint/consistent-type-imports"]);
+
+// Get the rule options from our config
+const config = posaune();
+const options = getRuleOptions(getRuleSetting(config, "@typescript-eslint/consistent-type-imports"));
 
 const ruleTester = createTsRuleTester();
 
