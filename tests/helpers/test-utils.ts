@@ -27,16 +27,16 @@ export function getPluginFromConfig(configArray: readonly unknown[], pluginName:
  */
 export function getRuleFromPlugin(plugin: unknown, ruleName: string): unknown {
   if (!isRecord(plugin)) {
-    throw new Error(`Expected plugin object to be a record, got: ${typeof plugin}`);
+    throw new TypeError(`Expected plugin object to be a record, got: ${typeof plugin}`);
   }
 
   const rules = plugin.rules;
   if (!isRecord(rules)) {
-    throw new Error(`Expected plugin.rules to be a record, got: ${typeof rules}`);
+    throw new TypeError(`Expected plugin.rules to be a record, got: ${typeof rules}`);
   }
 
   const rule = rules[ruleName];
-  if (!rule) {
+  if (rule === undefined) {
     throw new Error(`Rule "${ruleName}" was not found on the plugin object.`);
   }
 
@@ -47,10 +47,10 @@ export function getRuleFromPlugin(plugin: unknown, ruleName: string): unknown {
  * Type assertion to cast a rule object to TSESLint.RuleModule.
  */
 export function asRuleModule(rule: unknown): TSESLint.RuleModule<string, unknown[]> {
-  if (!isRecord(rule)) throw new Error("Expected rule to be an object.");
-  if (!("meta" in rule)) throw new Error("Expected rule.meta to exist.");
+  if (!isRecord(rule)) throw new TypeError("Expected rule to be an object.");
+  if (!("meta" in rule)) throw new TypeError("Expected rule.meta to exist.");
   if (typeof (rule as { create?: unknown }).create !== "function") {
-    throw new Error("Expected rule.create to be a function.");
+    throw new TypeError("Expected rule.create to be a function.");
   }
 
   return rule as unknown as TSESLint.RuleModule<string, unknown[]>;

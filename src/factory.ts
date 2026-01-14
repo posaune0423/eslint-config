@@ -1,6 +1,14 @@
 import type { Linter } from "eslint";
 import type { Options } from "./types";
-import { eslintConfig, typescriptConfig, securityConfig, nodeConfig, reactConfig } from "./configs";
+import {
+  eslintConfig,
+  importConfig,
+  typescriptConfig,
+  securityConfig,
+  nodeConfig,
+  reactConfig,
+  unicornConfig,
+} from "./configs";
 
 /**
  * Create an ESLint flat config with sensible defaults.
@@ -37,8 +45,14 @@ export function posaune0423(options: Options = {}, ...customConfigs: Linter.Conf
   // Base: ESLint recommended (always included)
   result.push(...eslintConfig());
 
+  // Import: eslint-plugin-import (always included)
+  result.push(...importConfig());
+
   // Security: eslint-plugin-security (always included by default)
   result.push(...securityConfig());
+
+  // Unicorn: eslint-plugin-unicorn selected rules (always included)
+  result.push(...unicornConfig());
 
   // TypeScript: strictTypeChecked + custom rules (default: true)
   if (typescript) {

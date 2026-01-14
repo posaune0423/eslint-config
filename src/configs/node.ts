@@ -6,5 +6,5 @@ import type { Linter } from "eslint";
  * Uses flat/recommended which considers both CJS and ESM based on package.json type field.
  */
 export function nodeConfig(): Linter.Config[] {
-  return [nodePlugin.configs["flat/recommended"] as Linter.Config];
+  return [nodePlugin.configs["flat/recommended"]];
 }

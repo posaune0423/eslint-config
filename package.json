@@ -1,11 +1,11 @@
 {
   "name": "@posaune0423/eslint-config",
   "main": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
-      "types": "./dist/index.d.mts"
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
@@ -31,22 +31,28 @@
   "scripts": {
     "format": "prettier --check . --experimental-cli --experimental-ternaries",
     "format:fix": "prettier --write . --experimental-cli --experimental-ternaries",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "typecheck": "tsgo --noEmit",
     "test": "bun test",
     "test:unit": "bun test tests/unit",
     "test:integration": "bun test tests/integration",
-    "build": "tsdown",
+    "build:js": "bun build src/index.ts --outfile dist/index.mjs --target node --format esm --minify --packages=external",
+    "build:types": "bunx --no-install tsc -p tsconfig.build-types.json",
+    "build": "bun run build:js && bun run build:types",
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@eslint-react/eslint-plugin": "^1.49.0",
-    "@eslint/compat": "^2.0.0",
+    "@eslint-react/eslint-plugin": "^1.53.1",
+    "@eslint/compat": "^2.0.1",
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
     "@prettier/plugin-oxc": "^0.1.3",
-    "eslint-plugin-n": "^17.18.0",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-n": "^17.23.2",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-you-might-not-need-an-effect": "^0.8.3",
+    "eslint-plugin-react-you-might-not-need-an-effect": "^0.8.5",
     "eslint-plugin-security": "^3.0.1",
     "eslint-plugin-unicorn": "^62.0.0",
     "globals": "^16.5.0",
@@ -58,10 +64,10 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@typescript-eslint/rule-tester": "8.50.0",
-    "@typescript/native-preview": "^7.0.0-dev.20260104.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260113.1",
     "eslint": "^9.39.2",
     "jiti": "^2.6.1",
-    "tsdown": "^0.19.0-beta.2"
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "eslint": "^9.39.2",

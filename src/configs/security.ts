@@ -6,5 +6,5 @@ import type { Linter } from "eslint";
  * Enabled by default to catch common security issues.
  */
 export function securityConfig(): Linter.Config[] {
-  return [pluginSecurity.configs.recommended as Linter.Config];
+  return [pluginSecurity.configs.recommended];
 }

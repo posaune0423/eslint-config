@@ -27,11 +27,11 @@ describe("React JSX Transform configuration", () => {
   });
 
   it("should not include legacy react/jsx-uses-react rule (using @eslint-react)", () => {
-    // @eslint-react/eslint-plugin doesn't include this legacy rule
+    // We intentionally enable `react/jsx-uses-react` (Antfu-style) even with the new JSX transform.
+    // This rule doesn't report by itself; it marks `React` as used to avoid false positives in other rules.
     const setting = getRuleSetting(reactConfig, "react/jsx-uses-react");
     const severity = getSeverity(setting);
 
-    // Either undefined (not present) or explicitly off
-    expect(severity === undefined || severity === "off" || severity === 0).toBe(true);
+    expect(severity === "warn" || severity === 1).toBe(true);
   });
 });
