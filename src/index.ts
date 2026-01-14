@@ -1,8 +1,7 @@
-// Base configurations
-export { baseConfig } from "./base";
+import { posaune0423 } from "./factory";
 
-// Node.js configurations
-export { nodeConfig } from "./node";
+export * from "./configs";
+export * from "./factory";
+export * from "./types";
 
-// React configurations
-export { reactConfig } from "./react";
+export default posaune0423;

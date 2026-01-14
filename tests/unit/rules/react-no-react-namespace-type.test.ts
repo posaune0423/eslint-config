@@ -1,12 +1,13 @@
 import type { TSESLint } from "@typescript-eslint/utils";
 import { builtinRules } from "eslint/use-at-your-own-risk";
-import { reactConfig } from "../../../src/react";
+import posaune from "../../../src";
 import { createTsRuleTester } from "../../helpers/rule-tester";
 import { getRuleOptions, getRuleSetting } from "../../helpers/test-utils";
 
 const rule = builtinRules.get("no-restricted-syntax");
 if (!rule) throw new Error("Failed to load core rule: no-restricted-syntax");
 
+const reactConfig = posaune({ react: true });
 const options = getRuleOptions(getRuleSetting(reactConfig, "no-restricted-syntax"));
 
 const ruleTester = createTsRuleTester({ jsx: true });

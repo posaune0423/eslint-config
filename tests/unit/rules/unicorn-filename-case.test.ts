@@ -1,6 +1,6 @@
 import path from "node:path";
 import unicornPlugin from "eslint-plugin-unicorn";
-import { reactConfig } from "../../../src/react";
+import posaune from "../../../src";
 import { createTsRuleTester, repoRoot } from "../../helpers/rule-tester";
 import { asRuleModule, getRuleOptions, getRuleSetting } from "../../helpers/test-utils";
 
@@ -9,6 +9,7 @@ const rules = unicornPlugin.rules;
 if (!rules) throw new Error("unicorn plugin has no rules");
 const rule = asRuleModule(rules["filename-case"]);
 
+const reactConfig = posaune({ react: true });
 const options = getRuleOptions(getRuleSetting(reactConfig, "unicorn/filename-case"));
 
 const ruleTester = createTsRuleTester({ jsx: true });

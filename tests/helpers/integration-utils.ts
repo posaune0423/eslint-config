@@ -27,6 +27,23 @@ export async function lintFile({ configFile, filePath }: { configFile: string; f
   return { exitCode, stdout, stderr };
 }
 
+export async function printConfig({ configFile, filePath }: { configFile: string; filePath: string }) {
+  const proc = Bun.spawn({
+    cmd: ["bun", "run", "eslint", "--no-ignore", "--config", configFile, "--print-config", filePath],
+    cwd: repoRoot,
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+
+  const [exitCode, stdout, stderr] = await Promise.all([
+    proc.exited,
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+  ]);
+
+  return { exitCode, stdout, stderr };
+}
+
 export function parseRuleIds(stdout: string): string[] {
   const results = JSON.parse(stdout) as Array<{ messages: Array<{ ruleId: string | null }> }>;
   const result = results[0];
