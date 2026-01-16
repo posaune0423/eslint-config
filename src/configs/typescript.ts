@@ -5,10 +5,21 @@ import type { Linter } from "eslint";
  * TypeScript config: strict type-checked rules + custom rules.
  */
 export function typescriptConfig(): Linter.Config[] {
+  const typescriptFiles = ["**/*.{ts,tsx,mts,cts}"];
+
+  // `typescript-eslint` flat configs don't include `files` by default.
+  // If we spread them as-is, the TS parser + type-aware rules can apply to every file,
+  // including JS config files like `postcss.config.mjs`.
+  const strictTypeCheckedForTsFiles = (tseslint.configs.strictTypeChecked as Linter.Config[]).map((config) => ({
+    ...config,
+    files: config.files ?? typescriptFiles,
+  }));
+
   return [
-    ...(tseslint.configs.strictTypeChecked as Linter.Config[]),
+    ...strictTypeCheckedForTsFiles,
     {
       name: "@posaune0423/typescript",
+      files: typescriptFiles,
       rules: {
         // Prefer TS-aware versions of core rules when available.
         "dot-notation": "off",
