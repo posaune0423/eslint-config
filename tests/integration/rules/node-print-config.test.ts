@@ -36,5 +36,10 @@ describe("Node config (posaune({ node: true })) - print-config coverage", () => 
     expect(actualSeverity(rules["n/no-missing-import"])).toBe(2);
     expect(actualSeverity(rules["n/no-extraneous-import"])).toBe(2);
     expect(actualSeverity(rules["n/no-unsupported-features/es-syntax"])).toBe(2);
+
+    // Type-aware TypeScript rules must not apply to JS config files.
+    // This prevents issues like `postcss.config.mjs` requiring TS type information.
+    expect(rules["@typescript-eslint/no-floating-promises"]).toBeUndefined();
+    expect(rules["@typescript-eslint/no-deprecated"]).toBeUndefined();
   });
 });
