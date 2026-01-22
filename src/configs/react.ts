@@ -118,17 +118,6 @@ export function reactConfig(): Linter.Config[] {
             case: "kebabCase",
           },
         ],
-
-        // Avoid React namespace types like `React.Foo`
-        // Prefer: `import type { Foo } from "react"` and use `Foo` directly
-        "no-restricted-syntax": [
-          "error",
-          {
-            selector: "TSQualifiedName[left.name='React']",
-            message:
-              'Avoid React namespace types (e.g. `React.Foo`). Prefer `import type { Foo } from "react"` and use `Foo` directly.',
-          },
-        ],
       },
     },
   ];

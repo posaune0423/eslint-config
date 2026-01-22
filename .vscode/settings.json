@@ -1,0 +1,15 @@
+{
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "cSpell.words": [
+        "innerhtml"
+    ],
+    "typescript.experimental.useTsgo": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "TypeScriptTeam.native-preview"
+    }
+}
