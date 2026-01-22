@@ -17,7 +17,12 @@ export default [
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: ["tests/fixtures/*.ts", "tests/fixtures/*.tsx"],
+          allowDefaultProject: [
+            "tests/fixtures/*.ts",
+            "tests/fixtures/*.tsx",
+            "tests/scripts/**/*.{ts,tsx,mts,cts}",
+            "tests/bin/**/*.{ts,tsx,mts,cts}",
+          ],
         },
         tsconfigRootDir: repoRoot,
       },
