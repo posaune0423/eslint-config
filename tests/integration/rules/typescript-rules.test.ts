@@ -66,8 +66,10 @@ describe("TypeScript rules (baseConfig)", () => {
     expect(ruleIds).toContain("@typescript-eslint/restrict-plus-operands");
     expect(ruleIds).toContain("@typescript-eslint/restrict-template-expressions");
     expect(ruleIds).toContain("@typescript-eslint/return-await");
-    expect(ruleIds).toContain("@typescript-eslint/strict-boolean-expressions");
     expect(ruleIds).toContain("@typescript-eslint/switch-exhaustiveness-check");
     expect(ruleIds).toContain("@typescript-eslint/unbound-method");
+
+    // Ensure disabled rules do not trigger
+    expect(ruleIds).not.toContain("@typescript-eslint/strict-boolean-expressions");
   });
 });

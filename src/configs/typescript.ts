@@ -29,6 +29,8 @@ export function typescriptConfig(): Linter.Config[] {
         "no-unused-expressions": "off",
         "no-use-before-define": "off",
         "no-useless-constructor": "off",
+        "n/no-unsupported-features/node-builtins": "off", // NOTE: wanna use import.meta.dirname
+        "@typescript-eslint/strict-boolean-expressions": "off", // NOTE: annoying
 
         "@typescript-eslint/await-thenable": "error",
         "@typescript-eslint/dot-notation": ["error", { allowKeywords: true }],
@@ -47,10 +49,6 @@ export function typescriptConfig(): Linter.Config[] {
         "@typescript-eslint/restrict-plus-operands": "error",
         "@typescript-eslint/restrict-template-expressions": "error",
         "@typescript-eslint/return-await": ["error", "in-try-catch"],
-        "@typescript-eslint/strict-boolean-expressions": [
-          "error",
-          { allowNullableBoolean: true, allowNullableObject: true },
-        ],
         "@typescript-eslint/switch-exhaustiveness-check": "error",
         "@typescript-eslint/unbound-method": "error",
 

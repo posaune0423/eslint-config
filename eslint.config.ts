@@ -1,9 +1,5 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { Linter } from "eslint";
 import posaune0423 from "./src";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default [
   ...posaune0423(),
@@ -11,7 +7,6 @@ export default [
   { ignores: ["tests/fixtures/**"] },
   // Repo-only overrides for tests.
   {
-    name: "repo/tests-overrides",
     files: ["tests/**/*.{ts,tsx,js,jsx,mts,cts}"],
     rules: {
       // Test helpers frequently use dynamic key access and core ESLint APIs marked as deprecated.
@@ -20,13 +15,12 @@ export default [
     },
   },
   {
-    name: "repo/type-aware",
     languageOptions: {
       parserOptions: {
         // Enable typed linting for this repo's sources/tests.
         // Note: fixtures are excluded from tsconfig and ignored above.
         project: true,
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },

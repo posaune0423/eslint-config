@@ -44,12 +44,6 @@ void _restrictPlusOperands;
 const _restrictTemplateExpressions = `${{ a: 1 }}`;
 void _restrictTemplateExpressions;
 
-// @typescript-eslint/strict-boolean-expressions
-const _unknownCondition: unknown = 1;
-if (_unknownCondition) {
-  // noop
-}
-
 // @typescript-eslint/switch-exhaustiveness-check
 function _switchNotExhaustive(x: "a" | "b") {
   switch (x) {
