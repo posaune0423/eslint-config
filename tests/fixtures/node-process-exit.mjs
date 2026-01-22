@@ -2,4 +2,3 @@
 // so node rules like `n/no-process-exit` should trigger.
 
 process.exit(1);
-

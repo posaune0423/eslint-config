@@ -1,10 +1,18 @@
 import type { Linter } from "eslint";
+import globals from "globals";
 import posaune0423 from "./src";
 
 export default [
   ...posaune0423(),
   // Repo-only ignores (fixtures are linted separately in integration tests)
   { ignores: ["tests/fixtures/**"] },
+  // Repo-only overrides for Node-based test scripts.
+  {
+    files: ["tests/{bin,scripts}/**/*.{js,jsx,mjs,cjs}"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
   // Repo-only overrides for tests.
   {
     files: ["tests/**/*.{ts,tsx,js,jsx,mts,cts}"],

@@ -40,4 +40,3 @@ describe("Node config (posaune({ node: true })) - scripts/bin overrides", () => 
     expect(binRuleIds).not.toContain("no-process-exit");
   });
 });
-
